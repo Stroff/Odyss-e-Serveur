@@ -1,0 +1,1 @@
+INSERT INTO spell_pet_auras (spell, effectId, pet, aura ) VALUES ( 57263, 0, 17252, 56285 );

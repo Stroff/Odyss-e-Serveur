@@ -1,0 +1,9 @@
+INSERT INTO `spell_proc_event` (entry, Cooldown) VALUES
+(16689,2), -- Nature's Grasp (Rank 1)
+(16810,2), -- Nature's Grasp (Rank 2)
+(16811,2), -- Nature's Grasp (Rank 3)
+(16812,2), -- Nature's Grasp (Rank 4)
+(16813,2), -- Nature's Grasp (Rank 5)
+(17329,2), -- Nature's Grasp (Rank 6)
+(27009,2), -- Nature's Grasp (Rank 7)
+(53312,2); -- Nature's Grasp (Rank 8)

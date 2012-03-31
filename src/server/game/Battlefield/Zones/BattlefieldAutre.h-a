@@ -1,0 +1,59 @@
+#ifndef BATTLEFIELD_AUTRE_
+#define BATTLEFIELD_AUTRE_
+
+#include "../Battlefield.h"
+#include "Group.h"
+#include "WorldPacket.h"
+#include "World.h"
+
+class BattlefieldAutre;
+
+enum eAutrepell
+{
+    SPELL_SPIRITUAL_IMMUNITY                     = 58729,
+    SPELL_TELEPORT_DALARAN                       = 53360,
+};
+
+/*#########################
+*####### Graveyards ######*
+#########################*/
+
+class BfGraveYardAutre: public BfGraveYard
+{
+public:
+    BfGraveYardAutre(BattlefieldAutre* Bf);
+    void SetTextId(uint32 textid)   {   m_GossipTextId = textid;    }
+    uint32 GetTextId()              {   return m_GossipTextId;      }
+protected:
+    uint32 m_GossipTextId;
+};
+
+enum eAutreGraveyardId
+{
+    BATTLEFIELD_AUTRE_GY_HORDE,
+    BATTLEFIELD_AUTRE_GY_ALLIANCE,
+    BATTLEFIELD_AUTRE_GY_MAX,
+};
+
+/*#########################
+* WinterGrasp Battlefield *
+#########################*/
+
+class BattlefieldAutre: public Battlefield
+{
+public:
+    void OnBattleStart();
+    void OnBattleEnd(bool endbytimer);
+    void OnStartGrouping();    
+    void OnPlayerJoinWar(Player* plr);
+    bool Update(uint32 diff);
+    void AddPlayerToResurrectQueue(uint64 npc_guid, uint64 player_guid);
+    bool SetupBattlefield();
+    WorldPacket BuildInitWorldStates();
+    void SendInitWorldStatesTo(Player* plr);
+    void SendInitWorldStatesToAll();
+    
+protected:
+    GuidSet m_PlayersIsSpellImu;  //Player is dead
+    uint32 m_saveTimer;
+};

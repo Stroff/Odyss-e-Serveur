@@ -1,0 +1,1 @@
+UPDATE creature_template SET Scriptname = "npc_master_melee" WHERE entry IN (33972, 33973, 33974);

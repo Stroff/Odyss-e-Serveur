@@ -1,0 +1,2 @@
+ALTER TABLE character_account_data MODIFY data LONGTEXT NOT NULL;
+ALTER TABLE account_data MODIFY data LONGTEXT NOT NULL;

@@ -1,0 +1,111 @@
+/*
+* a faire : 
+* trouver un nom :p (pour modifier Autre xD)
+* BattlefieldAutre.h
+* BattleFieldMgr.h/.cpp
+* La zone a créer en cpp
+Map: 37 (Cratère d'Azshara) Zone: 268 (Cratère d'Azshara) Area: 268 (Cratère d'Azshara) Phase: 4294967295
+X: 323.337006 Y: 169.505005 Z: 234.944000 Orientation: 5.142830
+grid[32,32]cell[4,2] InstanceID: 0
+
+* Après il y a d'autre méthode a ajouter si on veut mettre des npcs qui pop lors de la bataille et vehicule
+
+*/
+
+#include "BattlefieldAutre.h"
+#include "SpellAuras.h"
+
+bool BattlefieldAutre::SetupBattlefield()
+{
+    m_typeId = BATTLEFLIED_AUTRE;
+    m_BattleId = BATTLEFLIED_BATTLEID_AUTRE;
+    m_ZoneId = 268; // cratere d'azshara
+    m_MapId = 37;
+    m_MaxPlayer = sWorld->GetIntConfig(CONFIG_/*ZONE*/_PLR_MAX);
+    m_MinPlayer = sWorld->getIntConfig(CONFIG_/*ZONE*/_PLR_MIN);
+    m_MinLevel = sWorld->getIntConfig(CONFIG_/*ZONE*/_PLR_MIN_LVL);
+    m_BattleTime = sWorld->getIntConfig(CONFIG_/*ZONE*/_BATTLETIME)*60*1000; // temps en milliseconde
+    m_TimeForAcceptInvite = 20;//in second
+    m_StartGroupingTimer = 15*60*1000; //in ms
+    m_StartGrouping=false;
+    KickPosition.Relocate(5807.971191, 588.626343, 660.939209, 1.618274); // Dalaran au meme endroit que l'on ai tp lors de la fin du joug :D
+    KickPosition.m_mapId = 571; // Dalaran
+    
+    RegisterZone(m_ZoneId);
+    m_saveTimer = 60000;
+    
+    // Init GraveYards
+    SetGraveyardNumber(BATTLEFIELD_AUTRE_AUTRE_MAX);
+    
+    /* a finaliser */
+ }
+ 
+bool BattlefieldAutre::Update(uint32 diff)
+{
+
+}
+void BattlefieldAutre::AddPlayerToResurrectQueue(uint64 npc_guid, uint64 player_guid) // copier du joug
+{
+    Battlefield::AddPlayerToResurrectQueue(npc_guid, player_guid);
+    if(IsWarTime())
+    {
+        if(Player *plr = sObjectMgr->GetPlayer(player_guid))
+        {
+            if(!plr->HasAura(SPELL_SPIRITUAL_IMMUNITY))
+            {
+                plr->CastSpell(plr, SPELL_SPIRITUAL_IMMUNITY, true);
+                m_PlayersIsSpellImu.insert(plr->GetGUID());
+            }
+        }
+    }
+}
+
+void BattlefieldAutre::OnBattleStart()
+{
+
+}
+
+void BattlefieldAutre::OnBattleEnd(bool endbytimer)
+{
+
+}
+
+void BattlefieldAutre::OnStartGrouping()
+{
+	//Warn
+    //SendWarningToAllInZone(BATTLEFIELD_AUTRE_TEXT_WILL_START);
+    sWorld->SendWorldText(BATTLEFIELD_AUTRE_TEXT_WILL_START);
+}
+
+void BattlefieldAutre::OnPlayerJoinWar(Player* plr)
+{
+    if(plr->GetZoneId()!=m_ZoneId)
+    {
+        if(plr->GetTeamId()==TEAM_HORDE)
+            plr->TeleportTo(/*cote horde*/);
+        else
+             plr->TeleportTo(/* cote ally*/); 
+    }
+    SendInitWorldStatesTo(plr);
+}
+
+//Method sending worldsate to player
+WorldPacket BattlefieldAutre::BuildInitWorldStates()
+{
+
+}
+
+void BattlefieldAutre::SendInitWorldStatesTo(Player *player)
+{
+   WorldPacket data= BuildInitWorldStates();
+   player->GetSession()->SendPacket(&data);
+}
+
+void BattlefieldAutre::SendInitWorldStatesToAll()
+{
+	WorldPacket data= BuildInitWorldStates();
+	for(uint8 team=0;team<2;team++)
+		for (GuidSet::iterator itr = m_players[team].begin(); itr != m_players[team].end(); ++itr)
+			if(Player *plr = sObjectMgr->GetPlayer((*itr)))
+				plr->GetSession()->SendPacket(&data);
+}
